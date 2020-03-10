@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[3]:
-
-
 import skmultiflow
 import time
 import warnings
@@ -16,9 +10,7 @@ from skmultiflow.trees.hoeffding_tree import HoeffdingTree
 from skmultiflow.data.data_stream import DataStream
 from sklearn.preprocessing import MinMaxScaler
 
-
-# In[4]:
-
+#Class for OCDD
 
 class dataBuffer():
     def __init__(self, size, dim, percent):
@@ -60,10 +52,7 @@ class dataBuffer():
     def getCurrentLabels(self):
         return self.win_label[self.window_index:self.size]
 
-
-# In[5]:
-
-
+# Method that iterates through the dataset with given parameters
 def unsupervised_analysis(df, nu, size, percent):
     stream = DataStream(df)
     stream.prepare_for_use()
@@ -125,39 +114,24 @@ def unsupervised_analysis(df, nu, size, percent):
     final_accuracy = "Parameters: {}, {}, {}, Final accuracy: {}, Elapsed time: {}".format(nu,size,percent,acc,elapsed)
     return final_accuracy, stream_record
 
-
-# In[6]:
-
-
+# Method to ignore warnings during the whole process.
 def warn(*args, **kwargs):
     pass
-warnings.warn = warn
-
-warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
-# In[7]:
-
-
+# Making dataset ready for the process
 def select_data(x):
     df = pd.read_csv(x)
     scaler = MinMaxScaler()
     df.iloc[:,0:df.shape[1]-1] = scaler.fit_transform(df.iloc[:,0:df.shape[1]-1])
     return df
 
-
-# In[8]:
-
-
+# Method for validating predictions of the classifier
 def check_true(y,y_hat):
     if(y==y_hat):
         return 1
     else:
         return 0
-
-
-# In[ ]:
-
 
 def window_average(x,N):
     low_index = 0
@@ -171,10 +145,10 @@ def window_average(x,N):
     return w_avg
 
 
-# In[ ]:
+# MAIN CODE
+warnings.warn = warn
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
-
-#MAIN
 df = select_data(sys.argv[1])
 nu = float(sys.argv[2])
 size = int(sys.argv[3])
@@ -184,9 +158,7 @@ final_acc, st_rec = unsupervised_analysis(df,nu,size,percent)
 print(final_acc)
 
 
-# In[ ]:
-
-
+# PLOT CODE
 temp=int((len(st_rec))/30)
 st_rec2 = window_average(st_rec, temp)
 x = np.linspace(0, 100, len(st_rec2), endpoint=True)
@@ -200,16 +172,6 @@ plt.legend(loc='lower left')
 plt.ticklabel_format(style='sci')
 
 plt.show()
-
-
-# In[9]:
-
-
-a=0.5
-
-
-# In[ ]:
-
 
 
 
